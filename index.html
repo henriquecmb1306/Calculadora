@@ -23,12 +23,15 @@ body{background:#0e0f11;color:#f0ede8;font-family:-apple-system,BlinkMacSystemFo
 .tab-btn.on{color:#c8f542;border-bottom-color:#c8f542}
 
 /* PANELS */
-.panel{display:none;padding:1rem}
+.panel{display:none;padding:1rem 1rem 0}
 .panel.on{display:block}
 
 /* SECTION */
-.sec{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#7a7f88;margin:1.25rem 0 .7rem;padding-bottom:.4rem;border-bottom:1px solid #3a3e45}
-.sec:first-child{margin-top:0}
+.sec{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#7a7f88;margin:1.75rem 0 .9rem;padding-bottom:.5rem;border-bottom:1px solid #3a3e45}
+.sec:first-child{margin-top:.25rem}
+
+/* SECTION GROUP CARD */
+.sec-group{background:#161719;border:1px solid #2a2d31;border-radius:12px;padding:1rem 1rem .25rem;margin-bottom:.5rem}
 
 /* MODELO TOGGLE */
 .toggle-wrap{display:flex;background:#3a3e45;border-radius:8px;padding:3px;gap:3px;margin-bottom:.75rem}
@@ -38,11 +41,26 @@ body{background:#0e0f11;color:#f0ede8;font-family:-apple-system,BlinkMacSystemFo
 .info-box b{color:#42c8f5}
 
 /* FIELDS */
-.field{margin-bottom:1.1rem}
-.field-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.55rem}
-.field-name{font-size:13px;color:#7a7f88}
-.field-val{font-size:14px;font-weight:700;color:#c8f542}
-.field-hint{font-size:10px;color:#7a7f88;margin-top:5px;line-height:1.5}
+.field{margin-bottom:1.4rem}
+.field-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem;gap:.5rem}
+.field-name{font-size:13px;color:#7a7f88;flex:1;line-height:1.35}
+.field-val{font-size:14px;font-weight:700;color:#c8f542;cursor:pointer;padding:4px 8px;border-radius:6px;border:1px solid transparent;transition:all .18s;white-space:nowrap;-webkit-tap-highlight-color:transparent;user-select:none}
+.field-val:active,.field-val:hover{background:rgba(200,245,66,.1);border-color:rgba(200,245,66,.3)}
+.field-val::after{content:'✏';font-size:9px;margin-left:4px;opacity:.45}
+.field-hint{font-size:10px;color:#7a7f88;margin-top:6px;line-height:1.5}
+
+/* INLINE EDIT OVERLAY */
+.edit-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;display:flex;align-items:flex-end;justify-content:center;padding:0 0 env(safe-area-inset-bottom,0)}
+.edit-overlay.hidden{display:none}
+.edit-sheet{background:#1e2023;border-radius:16px 16px 0 0;padding:1.25rem 1rem 1.5rem;width:100%;max-width:480px;border-top:1px solid #3a3e45}
+.edit-sheet-title{font-size:11px;color:#7a7f88;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem}
+.edit-sheet-input{width:100%;background:#161719;border:1.5px solid #3a3e45;border-radius:10px;color:#f0ede8;font-size:1.5rem;font-weight:700;padding:.7rem 1rem;outline:none;text-align:right;letter-spacing:-.01em;transition:border-color .18s;-webkit-appearance:none}
+.edit-sheet-input:focus{border-color:#c8f542}
+.edit-sheet-hint{font-size:11px;color:#7a7f88;margin-top:.5rem;text-align:right}
+.edit-sheet-btns{display:flex;gap:.65rem;margin-top:1rem}
+.edit-btn{flex:1;padding:.8rem;border-radius:10px;font-size:14px;font-weight:700;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.edit-btn.cancel{background:#2a2d31;color:#7a7f88}
+.edit-btn.confirm{background:#c8f542;color:#0e0f11}
 
 input[type=range]{
   -webkit-appearance:none;appearance:none;
@@ -139,21 +157,25 @@ svg.mainchart{width:100%;overflow:visible;display:block}
   </div>
 
   <div class="sec">Moradia atual</div>
+  <div class="sec-group">
 
   <div class="field">
     <div class="field-top"><span class="field-name">Aluguel mensal</span><span class="field-val" id="o-alug">R$ 2.200</span></div>
-    <input type="range" id="alug" min="500" max="10000" step="100" value="2200" oninput="render()">
+    <input type="range" id="alug" min="500" max="50000" step="100" value="2200" oninput="render()">
   </div>
   <div class="field">
     <div class="field-top"><span class="field-name">Condomínio atual</span><span class="field-val" id="o-cond">R$ 800</span></div>
-    <input type="range" id="cond" min="0" max="3000" step="50" value="800" oninput="render()">
+    <input type="range" id="cond" min="0" max="10000" step="50" value="800" oninput="render()">
+  </div>
+
   </div>
 
   <div class="sec">Imóvel a financiar</div>
+  <div class="sec-group">
 
   <div class="field">
     <div class="field-top"><span class="field-name">Valor do imóvel</span><span class="field-val" id="o-imovel">R$ 500.000</span></div>
-    <input type="range" id="imovel" min="100000" max="2000000" step="10000" value="500000" oninput="render()">
+    <input type="range" id="imovel" min="100000" max="5000000" step="10000" value="500000" oninput="render()">
   </div>
   <div class="field">
     <div class="field-top"><span class="field-name">Entrada</span><span class="field-val" id="o-entrada">20% · R$ 100.000</span></div>
@@ -169,7 +191,7 @@ svg.mainchart{width:100%;overflow:visible;display:block}
   </div>
   <div class="field">
     <div class="field-top"><span class="field-name">Condomínio do imóvel</span><span class="field-val" id="o-cond2">R$ 800</span></div>
-    <input type="range" id="cond2" min="0" max="3000" step="50" value="800" oninput="render()">
+    <input type="range" id="cond2" min="0" max="10000" step="50" value="800" oninput="render()">
   </div>
   <div class="field">
     <div class="field-top"><span class="field-name">ITBI + Cartório</span><span class="field-val" id="o-itbi">4% · R$ 20.000</span></div>
@@ -181,17 +203,22 @@ svg.mainchart{width:100%;overflow:visible;display:block}
     <input type="range" id="valz" min="0" max="15" step="0.5" value="4" oninput="render()">
   </div>
 
+  </div>
+
   <div class="sec">Investimentos</div>
+  <div class="sec-group">
 
   <div class="field">
     <div class="field-top"><span class="field-name">Rendimento bruto anual</span><span class="field-val" id="o-rend">12,0% a.a.</span></div>
-    <input type="range" id="rend" min="5" max="20" step="0.1" value="12" oninput="render()">
+    <input type="range" id="rend" min="5" max="30" step="0.1" value="12" oninput="render()">
   </div>
   <div class="field">
     <div class="field-top"><span class="field-name">IR sobre rendimentos</span><span class="field-val" id="o-ir">15% → 10,2% líq.</span></div>
     <input type="range" id="ir" min="0" max="22.5" step="2.5" value="15" oninput="render()">
     <div class="sbar"><div class="sfill" id="sfill"></div></div>
     <div class="field-hint" id="slabel"></div>
+  </div>
+
   </div>
 
 </div>
@@ -247,6 +274,19 @@ svg.mainchart{width:100%;overflow:visible;display:block}
     <div class="chart-area">
       <div class="chart-legend" id="clegend"></div>
       <svg class="mainchart" id="svg-chart" viewBox="0 0 340 200" aria-label="Gráfico comparativo"></svg>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT OVERLAY -->
+<div class="edit-overlay hidden" id="edit-overlay" onclick="closeEdit(event)">
+  <div class="edit-sheet" onclick="event.stopPropagation()">
+    <div class="edit-sheet-title" id="edit-title">Editar valor</div>
+    <input class="edit-sheet-input" id="edit-input" type="number" inputmode="decimal" autocomplete="off">
+    <div class="edit-sheet-hint" id="edit-hint"></div>
+    <div class="edit-sheet-btns">
+      <button class="edit-btn cancel" onclick="closeEdit()">Cancelar</button>
+      <button class="edit-btn confirm" onclick="confirmEdit()">OK</button>
     </div>
   </div>
 </div>
@@ -566,8 +606,73 @@ function render() {
   if (el('p2').classList.contains('on')) drawChart();
 }
 
+// ─── INLINE EDIT ─────────────────────────────────────
+let editTarget = null; // {rangeId, label, min, max, step, prefix, suffix}
+
+const EDIT_FIELDS = {
+  'o-alug':   {rangeId:'alug',   label:'Aluguel mensal',          min:500,    max:50000,  step:100,  prefix:'R$ ', suffix:''},
+  'o-cond':   {rangeId:'cond',   label:'Condomínio atual',        min:0,      max:10000,  step:50,   prefix:'R$ ', suffix:''},
+  'o-imovel': {rangeId:'imovel', label:'Valor do imóvel',         min:50000,  max:5000000,step:1000, prefix:'R$ ', suffix:''},
+  'o-entrada':{rangeId:'entrada',label:'Entrada (%)',              min:10,     max:80,     step:1,    prefix:'',   suffix:'%'},
+  'o-prazo':  {rangeId:'prazo',  label:'Prazo (anos)',            min:5,      max:35,     step:1,    prefix:'',   suffix:' anos'},
+  'o-juros':  {rangeId:'juros',  label:'Juros do financiamento',  min:5,      max:18,     step:0.1,  prefix:'',   suffix:'% a.a.'},
+  'o-cond2':  {rangeId:'cond2',  label:'Condomínio do imóvel',   min:0,      max:10000,  step:50,   prefix:'R$ ', suffix:''},
+  'o-itbi':   {rangeId:'itbi',   label:'ITBI + Cartório (%)',     min:0,      max:10,     step:0.5,  prefix:'',   suffix:'%'},
+  'o-valz':   {rangeId:'valz',   label:'Valorização anual',       min:0,      max:15,     step:0.5,  prefix:'',   suffix:'% a.a.'},
+  'o-rend':   {rangeId:'rend',   label:'Rendimento bruto anual',  min:5,      max:30,     step:0.1,  prefix:'',   suffix:'% a.a.'},
+  'o-ir':     {rangeId:'ir',     label:'IR sobre rendimentos (%)',min:0,      max:22.5,   step:2.5,  prefix:'',   suffix:'%'},
+};
+
+// Make all field-val elements tappable
+function setupEditTriggers() {
+  Object.keys(EDIT_FIELDS).forEach(id => {
+    const el2 = document.getElementById(id);
+    if (!el2) return;
+    el2.addEventListener('click', () => openEdit(id));
+  });
+}
+
+function openEdit(valId) {
+  const cfg = EDIT_FIELDS[valId];
+  if (!cfg) return;
+  editTarget = {...cfg, valId};
+  const cur = +el(cfg.rangeId).value;
+  el('edit-title').textContent = cfg.label;
+  el('edit-input').min   = cfg.min;
+  el('edit-input').max   = cfg.max;
+  el('edit-input').step  = cfg.step;
+  el('edit-input').value = cur;
+  el('edit-hint').textContent = `Mín: ${cfg.prefix}${cfg.min}${cfg.suffix}  ·  Máx: ${cfg.prefix}${cfg.max}${cfg.suffix}`;
+  el('edit-overlay').classList.remove('hidden');
+  setTimeout(() => { el('edit-input').focus(); el('edit-input').select(); }, 80);
+}
+
+function closeEdit(e) {
+  if (e && e.target !== el('edit-overlay')) return;
+  el('edit-overlay').classList.add('hidden');
+  editTarget = null;
+}
+
+function confirmEdit() {
+  if (!editTarget) return;
+  let val = parseFloat(el('edit-input').value);
+  if (isNaN(val)) { el('edit-overlay').classList.add('hidden'); return; }
+  val = Math.min(editTarget.max, Math.max(editTarget.min, val));
+  el(editTarget.rangeId).value = val;
+  el('edit-overlay').classList.add('hidden');
+  editTarget = null;
+  render();
+}
+
+// Submit on Enter
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !el('edit-overlay').classList.contains('hidden')) confirmEdit();
+  if (e.key === 'Escape') { el('edit-overlay').classList.add('hidden'); editTarget = null; }
+});
+
 // ─── INIT ────────────────────────────────────────────
 render();
+setupEditTriggers();
 </script>
 </body>
 </html>
