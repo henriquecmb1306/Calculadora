@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Comprar vs Investir</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{background:#0e0f11;color:#f0ede8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;padding:0 0 80px}
+
+/* HEADER */
+.hdr{padding:1.25rem 1rem 1rem;border-bottom:1px solid #2a2d31}
+.hdr-label{font-size:10px;color:#7a7f88;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.3rem}
+.hdr-title{font-size:1.9rem;font-weight:800;line-height:1;letter-spacing:-.02em}
+.hdr-title em{font-style:normal;color:#c8f542}
+.hdr-sub{font-size:10px;color:#7a7f88;margin-top:.4rem}
+.hdr-sub span{color:#c8f542}
+
+/* TABS */
+.tabs{display:flex;position:sticky;top:0;z-index:100;background:#0e0f11;border-bottom:1px solid #2a2d31}
+.tab-btn{flex:1;padding:.85rem .5rem;font-size:12px;font-weight:600;letter-spacing:.04em;text-align:center;background:none;border:none;color:#7a7f88;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.tab-btn.on{color:#c8f542;border-bottom-color:#c8f542}
+
+/* PANELS */
+.panel{display:none;padding:1rem}
+.panel.on{display:block}
+
+/* SECTION */
+.sec{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#7a7f88;margin:1.25rem 0 .7rem;padding-bottom:.4rem;border-bottom:1px solid #3a3e45}
+.sec:first-child{margin-top:0}
+
+/* MODELO TOGGLE */
+.toggle-wrap{display:flex;background:#3a3e45;border-radius:8px;padding:3px;gap:3px;margin-bottom:.75rem}
+.toggle-btn{flex:1;padding:10px 0;font-size:13px;font-weight:600;text-align:center;border:none;border-radius:6px;cursor:pointer;background:transparent;color:#7a7f88;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.toggle-btn.on{background:#1e2023;color:#c8f542;border:1px solid #363a3f}
+.info-box{font-size:11px;color:#7a7f88;line-height:1.6;margin-bottom:.9rem;padding:.55rem .75rem;background:#1e2023;border-radius:6px;border-left:2px solid #3a3e45}
+.info-box b{color:#42c8f5}
+
+/* FIELDS */
+.field{margin-bottom:1.1rem}
+.field-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.55rem}
+.field-name{font-size:13px;color:#7a7f88}
+.field-val{font-size:14px;font-weight:700;color:#c8f542}
+.field-hint{font-size:10px;color:#7a7f88;margin-top:5px;line-height:1.5}
+
+input[type=range]{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:6px;
+  background:#363a3f;border-radius:6px;
+  outline:none;cursor:pointer;touch-action:manipulation;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:30px;height:30px;
+  border-radius:50%;background:#c8f542;
+  border:3px solid #0e0f11;box-shadow:0 0 0 2px #c8f542;
+  cursor:pointer;
+}
+input[type=range]::-moz-range-thumb{
+  width:30px;height:30px;border-radius:50%;
+  background:#c8f542;border:3px solid #0e0f11;
+  box-shadow:0 0 0 2px #c8f542;cursor:pointer;
+}
+
+/* VERDICT */
+.verdict{border-radius:12px;padding:1.1rem 1.2rem;border:1px solid;margin-bottom:1rem;transition:all .35s}
+.verdict.g{border-color:#42f5a0;background:rgba(66,245,160,.06)}
+.verdict.a{border-color:#f5a742;background:rgba(245,167,66,.06)}
+.verdict.r{border-color:#f55e5e;background:rgba(245,94,94,.06)}
+.v-tag{font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.35rem}
+.verdict.g .v-tag{color:#42f5a0}
+.verdict.a .v-tag{color:#f5a742}
+.verdict.r .v-tag{color:#f55e5e}
+.v-title{font-size:1.05rem;font-weight:800;margin-bottom:.4rem;line-height:1.2}
+.v-body{font-size:12px;color:#7a7f88;line-height:1.7}
+
+/* METRICS 2x2 */
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:1rem}
+.mc{background:#161719;border:1px solid #2a2d31;border-radius:10px;padding:.85rem}
+.mc-lbl{font-size:9px;color:#7a7f88;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.35rem}
+.mc-val{font-size:1.25rem;font-weight:800;line-height:1}
+.mc-val.pos{color:#42f5a0}.mc-val.neg{color:#f55e5e}.mc-val.warn{color:#f5a742}
+.mc-sub{font-size:10px;color:#7a7f88;margin-top:.3rem}
+
+/* FLOW TABLE */
+.flow{background:#161719;border:1px solid #2a2d31;border-radius:10px;overflow:hidden;margin-bottom:1rem}
+.frow{display:flex;justify-content:space-between;align-items:center;padding:.65rem 1rem;border-bottom:1px solid #2a2d31;font-size:12px;flex-wrap:wrap;gap:2px}
+.frow:last-child{border-bottom:none;font-weight:700;font-size:13px}
+.fl{color:#7a7f88;flex:1}
+.fv{font-weight:600}
+.fv.pos{color:#42f5a0}.fv.neg{color:#f55e5e}
+
+/* SVG CHART */
+.chart-wrap{background:#161719;border:1px solid #2a2d31;border-radius:10px;overflow:hidden;margin-bottom:1rem}
+.chart-tabs{display:flex;border-bottom:1px solid #2a2d31;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.chart-tabs::-webkit-scrollbar{display:none}
+.ctab{flex-shrink:0;padding:.7rem .9rem;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:none;border:none;border-right:1px solid #2a2d31;color:#7a7f88;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ctab:last-child{border-right:none}
+.ctab.on{background:#1e2023;color:#c8f542}
+.chart-area{padding:.75rem}
+.chart-legend{display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:.6rem;font-size:11px;color:#7a7f88}
+.leg-item{display:flex;align-items:center;gap:5px}
+.leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+svg.mainchart{width:100%;overflow:visible;display:block}
+
+/* SPREAD */
+.sbar{height:5px;border-radius:3px;background:#3a3e45;margin-top:6px;overflow:hidden}
+.sfill{height:100%;border-radius:3px;transition:width .4s,background .3s}
+
+/* DISCLAIMER */
+.disc{font-size:10px;color:#7a7f88;line-height:1.65;padding:.75rem 1rem;background:#161719;border:1px solid #2a2d31;border-radius:8px}
+.disc b{color:#f0ede8}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-label">Simulador Financeiro Pessoal</div>
+  <div class="hdr-title">Comprar <em>ou</em> Investir?</div>
+  <div class="hdr-sub">SAC · Price · IR · ITBI — por <span>Henrique Cardoso</span></div>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn on" id="t0" onclick="switchTab(0)">⚙ Parâmetros</button>
+  <button class="tab-btn" id="t1" onclick="switchTab(1)">📊 Resultado</button>
+  <button class="tab-btn" id="t2" onclick="switchTab(2)">📈 Gráfico</button>
+</div>
+
+<!-- ══ PAINEL 0: PARÂMETROS ══ -->
+<div class="panel on" id="p0">
+
+  <div class="sec">Tabela de amortização</div>
+  <div class="toggle-wrap">
+    <button class="toggle-btn on" id="btn-sac" onclick="setModelo('sac')">SAC</button>
+    <button class="toggle-btn" id="btn-price" onclick="setModelo('price')">Price</button>
+  </div>
+  <div class="info-box" id="modelo-info">
+    <b>SAC</b> — parcela decrescente. Começa mais caro, termina mais barato.
+  </div>
+
+  <div class="sec">Moradia atual</div>
+
+  <div class="field">
+    <div class="field-top"><span class="field-name">Aluguel mensal</span><span class="field-val" id="o-alug">R$ 2.200</span></div>
+    <input type="range" id="alug" min="500" max="10000" step="100" value="2200" oninput="render()">
+  </div>
+  <div class="field">
+    <div class="field-top"><span class="field-name">Condomínio atual</span><span class="field-val" id="o-cond">R$ 800</span></div>
+    <input type="range" id="cond" min="0" max="3000" step="50" value="800" oninput="render()">
+  </div>
+
+  <div class="sec">Imóvel a financiar</div>
+
+  <div class="field">
+    <div class="field-top"><span class="field-name">Valor do imóvel</span><span class="field-val" id="o-imovel">R$ 500.000</span></div>
+    <input type="range" id="imovel" min="100000" max="2000000" step="10000" value="500000" oninput="render()">
+  </div>
+  <div class="field">
+    <div class="field-top"><span class="field-name">Entrada</span><span class="field-val" id="o-entrada">20% · R$ 100.000</span></div>
+    <input type="range" id="entrada" min="10" max="80" step="1" value="20" oninput="render()">
+  </div>
+  <div class="field">
+    <div class="field-top"><span class="field-name">Prazo</span><span class="field-val" id="o-prazo">30 anos</span></div>
+    <input type="range" id="prazo" min="5" max="35" step="1" value="30" oninput="render()">
+  </div>
+  <div class="field">
+    <div class="field-top"><span class="field-name">Juros do financiamento</span><span class="field-val" id="o-juros">10,5% a.a.</span></div>
+    <input type="range" id="juros" min="5" max="18" step="0.1" value="10.5" oninput="render()">
+  </div>
+  <div class="field">
+    <div class="field-top"><span class="field-name">Condomínio do imóvel</span><span class="field-val" id="o-cond2">R$ 800</span></div>
+    <input type="range" id="cond2" min="0" max="3000" step="50" value="800" oninput="render()">
+  </div>
+  <div class="field">
+    <div class="field-top"><span class="field-name">ITBI + Cartório</span><span class="field-val" id="o-itbi">4% · R$ 20.000</span></div>
+    <input type="range" id="itbi" min="0" max="10" step="0.5" value="4" oninput="render()">
+    <div class="field-hint" id="itbi-hint">Descontado da entrada disponível</div>
+  </div>
+  <div class="field">
+    <div class="field-top"><span class="field-name">Valorização anual do imóvel</span><span class="field-val" id="o-valz">4,0% a.a.</span></div>
+    <input type="range" id="valz" min="0" max="15" step="0.5" value="4" oninput="render()">
+  </div>
+
+  <div class="sec">Investimentos</div>
+
+  <div class="field">
+    <div class="field-top"><span class="field-name">Rendimento bruto anual</span><span class="field-val" id="o-rend">12,0% a.a.</span></div>
+    <input type="range" id="rend" min="5" max="20" step="0.1" value="12" oninput="render()">
+  </div>
+  <div class="field">
+    <div class="field-top"><span class="field-name">IR sobre rendimentos</span><span class="field-val" id="o-ir">15% → 10,2% líq.</span></div>
+    <input type="range" id="ir" min="0" max="22.5" step="2.5" value="15" oninput="render()">
+    <div class="sbar"><div class="sfill" id="sfill"></div></div>
+    <div class="field-hint" id="slabel"></div>
+  </div>
+
+</div>
+
+<!-- ══ PAINEL 1: RESULTADO ══ -->
+<div class="panel" id="p1">
+
+  <div class="verdict g" id="verdict">
+    <div class="v-tag" id="v-icon">▲ Resultado</div>
+    <div class="v-title" id="v-title">—</div>
+    <div class="v-body" id="v-body">—</div>
+  </div>
+
+  <div class="metrics">
+    <div class="mc">
+      <div class="mc-lbl" id="m-plbl">1ª Parcela</div>
+      <div class="mc-val" id="m-parc">—</div>
+      <div class="mc-sub" id="m-psub">—</div>
+    </div>
+    <div class="mc">
+      <div class="mc-lbl">Δ caixa/mês</div>
+      <div class="mc-val" id="m-delta">—</div>
+      <div class="mc-sub" id="m-dsub">vs. hoje</div>
+    </div>
+    <div class="mc">
+      <div class="mc-lbl">Patrimônio compra</div>
+      <div class="mc-val" id="m-patF">—</div>
+      <div class="mc-sub">final do prazo</div>
+    </div>
+    <div class="mc">
+      <div class="mc-lbl">Patrimônio investe</div>
+      <div class="mc-val" id="m-patI">—</div>
+      <div class="mc-sub">final do prazo</div>
+    </div>
+  </div>
+
+  <div class="flow" id="flow"></div>
+
+  <div class="disc">
+    <b>Nota:</b> Simulação didática. Não inclui TR/IPCA sobre saldo, IPTU, manutenção (~0,5–1%/ano), inflação do aluguel, seguro MIP+DFI. Use como referência comparativa, não como aconselhamento financeiro.
+  </div>
+
+</div>
+
+<!-- ══ PAINEL 2: GRÁFICO ══ -->
+<div class="panel" id="p2">
+  <div class="chart-wrap">
+    <div class="chart-tabs">
+      <button class="ctab on" id="ct0" onclick="setChart(0)">Patrimônio</button>
+      <button class="ctab" id="ct1" onclick="setChart(1)">Por entrada</button>
+      <button class="ctab" id="ct2" onclick="setChart(2)">Equilíbrio</button>
+    </div>
+    <div class="chart-area">
+      <div class="chart-legend" id="clegend"></div>
+      <svg class="mainchart" id="svg-chart" viewBox="0 0 340 200" aria-label="Gráfico comparativo"></svg>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────
+let modelo = 'sac';
+let activeChart = 0;
+let simResult = null;
+
+// ─── UTILS ───────────────────────────────────────────
+function fmt(v) {
+  const a = Math.abs(v);
+  if (a >= 1e6) return 'R$' + (v/1e6).toFixed(2).replace('.',',') + 'M';
+  if (a >= 1e3) return 'R$' + Math.round(v/1000) + 'k';
+  return 'R$' + Math.round(v).toLocaleString('pt-BR');
+}
+function p2(v) { return v.toFixed(1).replace('.',',') + '%'; }
+function el(id) { return document.getElementById(id); }
+
+// ─── TAB NAV ─────────────────────────────────────────
+function switchTab(i) {
+  [0,1,2].forEach(j => {
+    el('t'+j).classList.toggle('on', j===i);
+    el('p'+j).classList.toggle('on', j===i);
+  });
+  if (i === 2 && simResult) drawChart();
+}
+
+// ─── MODELO ──────────────────────────────────────────
+function setModelo(m) {
+  modelo = m;
+  el('btn-sac').classList.toggle('on', m==='sac');
+  el('btn-price').classList.toggle('on', m==='price');
+  el('modelo-info').innerHTML = m === 'sac'
+    ? '<b>SAC</b> — parcela decrescente. Começa mais caro, termina mais barato.'
+    : '<b>Price</b> — parcela fixa todo mês. Mais fácil de planejar. Paga mais juros no total.';
+  render();
+}
+
+// ─── GET VALUES ──────────────────────────────────────
+function getV() {
+  const rendB = +el('rend').value / 100;
+  const irAliq = +el('ir').value / 100;
+  return {
+    alug:    +el('alug').value,
+    cond:    +el('cond').value,
+    imovel:  +el('imovel').value,
+    entPct:  +el('entrada').value / 100,
+    prazo:   +el('prazo').value,
+    jurosAA: +el('juros').value / 100,
+    cond2:   +el('cond2').value,
+    itbiPct: +el('itbi').value / 100,
+    valzAA:  +el('valz').value / 100,
+    rendB, irAliq,
+    rendL:   rendB * (1 - irAliq),
+  };
+}
+
+// ─── AMORT ───────────────────────────────────────────
+function calcSAC(P, taxaAA, n) {
+  const tm = Math.pow(1+taxaAA, 1/12) - 1;
+  const am = P / n;
+  let s = P, total = 0, parc = [], saldos = [];
+  for (let i=0;i<n;i++) {
+    const j = s * tm;
+    parc.push(am + j); total += am + j; s -= am;
+    saldos.push(Math.max(0,s));
+  }
+  return {parc, total, p1:parc[0], pN:parc[n-1], saldos, tipo:'SAC'};
+}
+function calcPrice(P, taxaAA, n) {
+  const tm = Math.pow(1+taxaAA, 1/12) - 1;
+  const pmt = P * (tm * Math.pow(1+tm,n)) / (Math.pow(1+tm,n) - 1);
+  let s = P, saldos = [];
+  for (let i=0;i<n;i++) { s -= (pmt - s*tm); saldos.push(Math.max(0,s)); }
+  return {parc:Array(n).fill(pmt), total:pmt*n, p1:pmt, pN:pmt, saldos, tipo:'Price'};
+}
+function amort(P, taxaAA, n) {
+  return modelo==='sac' ? calcSAC(P,taxaAA,n) : calcPrice(P,taxaAA,n);
+}
+
+// ─── SIM ─────────────────────────────────────────────
+function runSim(v) {
+  const entrada = v.imovel * v.entPct;
+  const custoAq = v.imovel * v.itbiPct;
+  const entR    = Math.max(0, entrada - custoAq);
+  const fin     = v.imovel - entrada;
+  const meses   = v.prazo * 12;
+  const a       = amort(fin, v.jurosAA, meses);
+  const rm      = Math.pow(1 + v.rendL, 1/12) - 1;
+  const cAtual  = v.alug + v.cond;
+  const dif1    = a.p1 + v.cond2 - cAtual;
+
+  let pF=entR, pI=entR, imv=v.imovel;
+  let anoF=[], anoI=[];
+
+  for (let m=1; m<=meses; m++) {
+    const pc = a.parc[m-1];
+    const cF = pc + v.cond2;
+    pF *= (1+rm);
+    imv *= Math.pow(1+v.valzAA, 1/12);
+    pF  += (cAtual - cF);
+    const patriF = imv + Math.max(0,pF) - Math.max(0, a.saldos[m-1]);
+    pI *= (1+rm);
+    if (cF > cAtual) pI += (cF - cAtual);
+    if (m % 12 === 0) { anoF.push(patriF); anoI.push(pI); }
+  }
+  return {a, entrada, entR, custoAq, fin, meses, dif1, anoF, anoI, cAtual, v};
+}
+
+// ─── RENDER LABELS ───────────────────────────────────
+function updateLabels(v, s) {
+  el('o-alug').textContent    = fmt(v.alug);
+  el('o-cond').textContent    = fmt(v.cond);
+  el('o-imovel').textContent  = fmt(v.imovel);
+  el('o-entrada').textContent = Math.round(v.entPct*100)+'% · '+fmt(v.imovel*v.entPct);
+  el('o-prazo').textContent   = v.prazo+' anos';
+  el('o-juros').textContent   = p2(v.jurosAA*100);
+  el('o-cond2').textContent   = fmt(v.cond2);
+  el('o-itbi').textContent    = p2(v.itbiPct*100)+' · '+fmt(v.imovel*v.itbiPct);
+  el('itbi-hint').textContent = 'Entrada real disponível: '+fmt(s.entR);
+  el('o-valz').textContent    = p2(v.valzAA*100);
+  el('o-rend').textContent    = p2(v.rendB*100)+' a.a.';
+  el('o-ir').textContent      = p2(v.irAliq*100)+' → '+p2(v.rendL*100)+' líq.';
+  // spread
+  const sp = v.rendL - v.jurosAA;
+  el('sfill').style.width      = Math.min(100, Math.abs(sp)*450)+'%';
+  el('sfill').style.background = sp>=0 ? '#c8f542' : '#f55e5e';
+  el('slabel').textContent     = sp>=0
+    ? 'Spread +'+p2(sp*100)+': rendimento líquido acima dos juros'
+    : 'Spread '+p2(sp*100)+': juros acima do rendimento líquido';
+}
+
+// ─── RENDER RESULTS ──────────────────────────────────
+function updateResults(s) {
+  const {a, anoF, anoI, dif1, cAtual, custoAq, v} = s;
+  const fF = anoF[anoF.length-1];
+  const fI = anoI[anoI.length-1];
+
+  // Verdict
+  const vd = el('verdict');
+  vd.className = 'verdict ';
+  if (fF > fI*1.05) {
+    vd.className += 'g';
+    el('v-icon').textContent  = '▲ Financiar vence';
+    el('v-title').textContent = 'Comprar gera mais patrimônio';
+    el('v-body').textContent  = `Com custo atual de ${fmt(cAtual)}/mês e rendimento líquido de ${p2(v.rendL*100)}, o imóvel acumula mais${custoAq>0?' (mesmo com '+fmt(custoAq)+' de ITBI)':''}. Compra: ${fmt(fF)} vs Investe: ${fmt(fI)}.`;
+  } else if (fI > fF*1.05) {
+    vd.className += 'r';
+    el('v-icon').textContent  = '▼ Investir vence';
+    el('v-title').textContent = 'Manter investido gera mais patrimônio';
+    el('v-body').textContent  = `Rendimento líquido de ${p2(v.rendL*100)} supera os juros de ${p2(v.jurosAA*100)}. Investe: ${fmt(fI)} vs Compra: ${fmt(fF)}. Considere entrada maior ou taxa menor.`;
+  } else {
+    vd.className += 'a';
+    el('v-icon').textContent  = '◆ Empate técnico';
+    el('v-title').textContent = 'Resultado muito próximo';
+    el('v-body').textContent  = `${fmt(fF)} (compra) vs ${fmt(fI)} (investe). Disciplina de investir e segurança emocional são os desempates reais.`;
+  }
+
+  // Metrics
+  el('m-plbl').textContent  = '1ª Parcela ('+a.tipo+')';
+  el('m-parc').textContent  = fmt(a.p1);
+  el('m-psub').textContent  = modelo==='sac' ? 'Última: '+fmt(a.pN) : 'Fixa todo mês';
+  const dEl = el('m-delta');
+  dEl.textContent = (dif1>0?'+':'')+fmt(dif1);
+  dEl.className   = 'mc-val '+(dif1>0?'neg':'pos');
+  el('m-dsub').textContent  = dif1>0 ? 'custa mais/mês' : 'economiza/mês';
+  el('m-patF').textContent  = fmt(fF);
+  el('m-patI').textContent  = fmt(fI);
+  el('m-patF').className    = 'mc-val '+(fF>fI?'pos':fF<fI*.95?'neg':'warn');
+  el('m-patI').className    = 'mc-val '+(fI>fF?'pos':fI<fF*.95?'neg':'warn');
+
+  // Flow
+  const rows = [
+    {l:'Custo atual (aluguel+cond.)', v:cAtual, neg:true},
+    {l:`Parcela 1º mês (${a.tipo})`, v:a.p1, neg:true},
+    {l:'Condomínio do imóvel',        v:v.cond2, neg:true},
+    {l:'ITBI+Cartório (custo único)', v:custoAq, neg:true, once:true},
+    {l:dif1>0?'Custo extra/mês':'Economia/mês', v:Math.abs(dif1), neg:dif1>0, bold:true},
+  ];
+  el('flow').innerHTML = rows.map(r=>
+    `<div class="frow" style="${r.bold?'font-weight:700':''}">
+      <span class="fl">${r.l}${r.once?' <span style="font-size:9px;opacity:.6">(única vez)</span>':''}</span>
+      <span class="fv ${r.neg?'neg':'pos'}">${r.neg?'−':'+'} ${fmt(r.v)}</span>
+    </div>`
+  ).join('');
+}
+
+// ─── SVG CHART ───────────────────────────────────────
+function setChart(i) {
+  activeChart = i;
+  [0,1,2].forEach(j => el('ct'+j).classList.toggle('on', j===i));
+  drawChart();
+}
+
+const W=340, H=200, PAD={t:8,r:8,b:28,l:42};
+const CW = W-PAD.l-PAD.r;
+const CH = H-PAD.t-PAD.b;
+
+function svgEl(tag, attrs={}, inner='') {
+  const a = Object.entries(attrs).map(([k,v])=>`${k}="${v}"`).join(' ');
+  return `<${tag} ${a}>${inner}</${tag}>`;
+}
+
+function drawAxes(xLabels, yMin, yMax) {
+  const yRange = yMax - yMin || 1;
+  const ticks = 4;
+  let out = '';
+  // Y grid + labels
+  for (let i=0;i<=ticks;i++) {
+    const y = PAD.t + CH - (i/ticks)*CH;
+    const val = yMin + (i/ticks)*yRange;
+    const lbl = Math.abs(val)>=1000 ? Math.round(val/1000)+'k' : Math.round(val);
+    out += svgEl('line',{x1:PAD.l,y1:y,x2:PAD.l+CW,y2:y,stroke:'#2a2d31','stroke-width':'0.5'});
+    out += svgEl('text',{x:PAD.l-4,y:y+4,'text-anchor':'end','font-size':'7',fill:'#7a7f88'},lbl);
+  }
+  // X labels (show ~5)
+  const step = Math.max(1, Math.floor(xLabels.length/5));
+  xLabels.forEach((lbl,i)=>{
+    if (i%step!==0 && i!==xLabels.length-1) return;
+    const x = PAD.l + (i/(xLabels.length-1))*CW;
+    out += svgEl('text',{x,y:H-PAD.b+12,'text-anchor':'middle','font-size':'7',fill:'#7a7f88'},lbl);
+  });
+  return out;
+}
+
+function dataToPath(data, yMin, yMax, filled=false) {
+  const yRange = yMax - yMin || 1;
+  const pts = data.map((v,i) => {
+    const x = PAD.l + (i/(data.length-1))*CW;
+    const y = PAD.t + CH - ((v-yMin)/yRange)*CH;
+    return `${x},${y}`;
+  });
+  const line = 'M'+pts.join(' L');
+  if (!filled) return line;
+  const bY = PAD.t+CH;
+  return line+` L${PAD.l+CW},${bY} L${PAD.l},${bY} Z`;
+}
+
+function drawLineChart(s) {
+  const {anoF, anoI} = s;
+  const labels = anoF.map((_,i)=>'A'+(i+1));
+  const allV = [...anoF,...anoI];
+  const yMin = Math.min(...allV)*0.95;
+  const yMax = Math.max(...allV)*1.05;
+  const yRange = yMax-yMin;
+
+  el('clegend').innerHTML = [
+    {l:'Compra', c:'#c8f542', dash:false},
+    {l:'Aluga+Investe', c:'#42c8f5', dash:true}
+  ].map(d=>`<div class="leg-item"><div class="leg-dot" style="background:${d.c};${d.dash?'opacity:.5':''}"></div><span>${d.l}</span></div>`).join('');
+
+  let svg = drawAxes(labels, yMin/1000, yMax/1000);
+  // area fills
+  svg += svgEl('path',{d:dataToPath(anoI.map(v=>v/1000),yMin/1000,yMax/1000,true),fill:'rgba(66,200,245,0.07)',stroke:'none'});
+  svg += svgEl('path',{d:dataToPath(anoF.map(v=>v/1000),yMin/1000,yMax/1000,true),fill:'rgba(200,245,66,0.07)',stroke:'none'});
+  // lines
+  svg += svgEl('path',{d:dataToPath(anoI.map(v=>v/1000),yMin/1000,yMax/1000),fill:'none',stroke:'#42c8f5','stroke-width':'1.5','stroke-dasharray':'4,2'});
+  svg += svgEl('path',{d:dataToPath(anoF.map(v=>v/1000),yMin/1000,yMax/1000),fill:'none',stroke:'#c8f542','stroke-width':'2'});
+
+  el('svg-chart').innerHTML = svg;
+}
+
+function drawBarChart(data, labels, colorFn) {
+  el('clegend').innerHTML = '<div style="font-size:10px;color:#7a7f88">Verde = comprar vence · Vermelho = investir vence</div>';
+  const allV = data.map(Math.abs);
+  const yMax = Math.max(...allV)*1.1 || 1;
+  const yMin = Math.min(0, Math.min(...data)*1.1);
+  const yRange = yMax - yMin;
+  const zeroY = PAD.t + CH - ((0-yMin)/yRange)*CH;
+  const bw = CW/data.length;
+
+  let svg = drawAxes(labels, yMin, yMax);
+  svg += svgEl('line',{x1:PAD.l,y1:zeroY,x2:PAD.l+CW,y2:zeroY,stroke:'#363a3f','stroke-width':'1'});
+
+  data.forEach((v,i) => {
+    const x = PAD.l + i*bw + bw*.1;
+    const bH = Math.abs((v/yRange)*CH);
+    const y = v>=0 ? zeroY-bH : zeroY;
+    svg += svgEl('rect',{x,y,width:bw*.8,height:Math.max(1,bH),fill:colorFn(v),rx:'2'});
+  });
+
+  el('svg-chart').innerHTML = svg;
+}
+
+function drawChart() {
+  if (!simResult) return;
+  const s = simResult;
+  const v = s.v;
+
+  if (activeChart===0) {
+    drawLineChart(s);
+  } else if (activeChart===1) {
+    const entradas=[10,15,20,25,30,35,40,50,60,70,80];
+    const diffs = entradas.map(ep=>{
+      const r=runSim({...v,entPct:ep/100});
+      return (r.anoF[r.anoF.length-1]-r.anoI[r.anoI.length-1])/1000;
+    });
+    drawBarChart(diffs, entradas.map(e=>e+'%'), d=>d>=0?'rgba(200,245,66,.8)':'rgba(245,94,94,.8)');
+  } else {
+    const diff = s.anoF.map((f,i)=>(f-s.anoI[i])/1000);
+    const cx   = diff.findIndex((d,i)=>i>0&&Math.sign(d)!==Math.sign(diff[i-1]));
+    el('clegend').innerHTML = `<div style="font-size:10px;color:#7a7f88">Compra − Investimento por ano${cx>=0?' · Equilíbrio: Ano '+(cx+1):''}</div>`;
+    drawBarChart(diff, s.anoF.map((_,i)=>'A'+(i+1)), d=>d>=0?'rgba(200,245,66,.72)':'rgba(245,94,94,.72)');
+  }
+}
+
+// ─── MAIN RENDER ─────────────────────────────────────
+function render() {
+  const v = getV();
+  const s = runSim(v);
+  simResult = s;
+  updateLabels(v, s);
+  updateResults(s);
+  // só redesenha o gráfico se a aba estiver visível
+  if (el('p2').classList.contains('on')) drawChart();
+}
+
+// ─── INIT ────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
